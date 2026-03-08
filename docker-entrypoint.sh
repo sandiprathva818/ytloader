@@ -11,6 +11,7 @@ mkdir -p storage/framework/views
 mkdir -p storage/framework/cache/data
 mkdir -p storage/framework/sessions
 mkdir -p storage/app/public/downloads
+mkdir -p storage/app/tmp
 mkdir -p storage/logs
 
 # Fix permissions
