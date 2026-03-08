@@ -56,6 +56,11 @@ class ProcessVideoDownload implements ShouldQueue
             $this->url
         ];
 
+        if (file_exists(storage_path('app/cookies.txt'))) {
+            $command[] = '--cookies';
+            $command[] = storage_path('app/cookies.txt');
+        }
+
         // If high quality video, we might need to merge audio
         if ($this->type === 'video' && str_contains($this->formatId, '+')) {
             $command[] = '--merge-output-format';
