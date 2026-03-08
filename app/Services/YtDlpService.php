@@ -45,10 +45,8 @@ class YtDlpService
             '--dump-json',
             '--flat-playlist',
             '--no-warnings',
-            '--user-agent',
-            $userAgent,
             '--extractor-args',
-            'youtube:player-client=ios,android',
+            'youtube:player-client=ios,android,web',
             $url
         ]);
 
