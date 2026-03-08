@@ -337,13 +337,31 @@ class YtDlpService
         $cookiePath = storage_path('app/cookies.txt');
 
         if (!empty($cookies)) {
-            // Fix newlines that might have been escaped as literal \n in Render config
-            $formattedCookies = str_replace('\n', "\n", $cookies);
-            // Ensure standard Netscape format
-            if (!str_starts_with(trim($formattedCookies), '# Netscape HTTP Cookie File')) {
-                $formattedCookies = "# Netscape HTTP Cookie File\n" . $formattedCookies;
+            // Fix literal \n and \r
+            $formattedCookies = str_replace(['\n', '\r'], ["\n", ""], $cookies);
+            $formattedCookies = str_replace("\r", "", $formattedCookies);
+
+            $lines = explode("\n", $formattedCookies);
+            $validLines = [];
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if (empty($line) || $line === '# Netscape HTTP Cookie File' || str_starts_with($line, '# http')) {
+                    continue;
+                }
+
+                // Render often replaces tabs with spaces in environment variables.
+                // The first 6 fields of a Netscape cookie never contain spaces, so we can reliably rebuild the tabs.
+                $parts = preg_split('/\s+/', $line, 7);
+                if (count($parts) === 7) {
+                    // Quick validation: column 2 and 4 must be TRUE or FALSE
+                    if (in_array(strtoupper($parts[1]), ['TRUE', 'FALSE']) && in_array(strtoupper($parts[3]), ['TRUE', 'FALSE'])) {
+                        $validLines[] = implode("\t", $parts);
+                    }
+                }
             }
-            file_put_contents($cookiePath, trim($formattedCookies) . "\n");
+
+            $finalCookies = "# Netscape HTTP Cookie File\n" . implode("\n", $validLines) . "\n";
+            file_put_contents($cookiePath, $finalCookies);
         }
     }
 }
