@@ -14,13 +14,6 @@ mkdir -p storage/app/public/downloads
 mkdir -p storage/app/tmp
 mkdir -p storage/logs
 
-# Write YouTube cookies if provided in environment
-if [ ! -z "$YOUTUBE_COOKIES" ]; then
-    # Use printf or echo -e to ensure \n literals from the dashboard are converted into actual newlines
-    echo -e "$YOUTUBE_COOKIES" > storage/app/cookies.txt
-    chmod 600 storage/app/cookies.txt
-fi
-
 # Fix permissions
 chmod -R 777 storage bootstrap/cache
 

@@ -23,6 +23,7 @@ class YtDlpService
 
     public function getVideoInfo(string $url): ?array
     {
+        $this->ensureCookiesFile();
         $userAgent = $this->userAgents[array_rand($this->userAgents)];
 
         $ytDlpDocker = '/usr/local/bin/yt-dlp';
@@ -328,5 +329,21 @@ class YtDlpService
             $i++;
         }
         return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    protected function ensureCookiesFile(): void
+    {
+        $cookies = getenv('YOUTUBE_COOKIES');
+        $cookiePath = storage_path('app/cookies.txt');
+
+        if (!empty($cookies)) {
+            // Fix newlines that might have been escaped as literal \n in Render config
+            $formattedCookies = str_replace('\n', "\n", $cookies);
+            // Ensure standard Netscape format
+            if (!str_starts_with(trim($formattedCookies), '# Netscape HTTP Cookie File')) {
+                $formattedCookies = "# Netscape HTTP Cookie File\n" . $formattedCookies;
+            }
+            file_put_contents($cookiePath, trim($formattedCookies) . "\n");
+        }
     }
 }

@@ -26,6 +26,8 @@ class ProcessVideoDownload implements ShouldQueue
 
     public function handle(): void
     {
+        $this->ensureCookiesFile();
+
         $storagePath = storage_path("app/public/downloads/{$this->jobId}");
         if (!file_exists($storagePath)) {
             mkdir($storagePath, 0755, true);
@@ -162,5 +164,21 @@ class ProcessVideoDownload implements ShouldQueue
         ];
 
         Storage::disk('public')->put("downloads/{$this->jobId}/status.json", json_encode($statusData));
+    }
+
+    protected function ensureCookiesFile(): void
+    {
+        $cookies = getenv('YOUTUBE_COOKIES');
+        $cookiePath = storage_path('app/cookies.txt');
+
+        if (!empty($cookies)) {
+            // Fix newlines that might have been escaped as literal \n in Render config
+            $formattedCookies = str_replace('\n', "\n", $cookies);
+            // Ensure standard Netscape format
+            if (!str_starts_with(trim($formattedCookies), '# Netscape HTTP Cookie File')) {
+                $formattedCookies = "# Netscape HTTP Cookie File\n" . $formattedCookies;
+            }
+            file_put_contents($cookiePath, trim($formattedCookies) . "\n");
+        }
     }
 }
