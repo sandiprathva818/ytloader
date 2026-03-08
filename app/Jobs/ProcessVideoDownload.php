@@ -71,9 +71,13 @@ class ProcessVideoDownload implements ShouldQueue
             }
         }
 
+        $ffmpegDocker = '/usr/bin/ffmpeg';
         $ffmpegLinux = base_path('bin/ffmpeg');
         $ffmpegWin = base_path('bin/ffmpeg.exe');
-        if (file_exists($ffmpegLinux)) {
+        if (file_exists($ffmpegDocker)) {
+            $command[] = '--ffmpeg-location';
+            $command[] = $ffmpegDocker;
+        } elseif (file_exists($ffmpegLinux)) {
             $command[] = '--ffmpeg-location';
             $command[] = $ffmpegLinux;
         } elseif (file_exists($ffmpegWin)) {
@@ -81,9 +85,12 @@ class ProcessVideoDownload implements ShouldQueue
             $command[] = $ffmpegWin;
         }
 
+        $ytDlpDocker = '/usr/local/bin/yt-dlp';
         $ytDlpLinux = base_path('bin/yt-dlp');
         $ytDlpWin = base_path('bin/yt-dlp.exe');
-        if (file_exists($ytDlpLinux)) {
+        if (file_exists($ytDlpDocker)) {
+            $ytDlpArgs = [$ytDlpDocker];
+        } elseif (file_exists($ytDlpLinux)) {
             $ytDlpArgs = [$ytDlpLinux];
         } elseif (file_exists($ytDlpWin)) {
             $ytDlpArgs = [$ytDlpWin];

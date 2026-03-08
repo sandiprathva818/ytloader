@@ -25,10 +25,13 @@ class YtDlpService
     {
         $userAgent = $this->userAgents[array_rand($this->userAgents)];
 
+        $ytDlpDocker = '/usr/local/bin/yt-dlp';
         $ytDlpLinux = base_path('bin/yt-dlp');
         $ytDlpWin = base_path('bin/yt-dlp.exe');
 
-        if (file_exists($ytDlpLinux)) {
+        if (file_exists($ytDlpDocker)) {
+            $ytDlpArgs = [$ytDlpDocker];
+        } elseif (file_exists($ytDlpLinux)) {
             $ytDlpArgs = [$ytDlpLinux];
         } elseif (file_exists($ytDlpWin)) {
             $ytDlpArgs = [$ytDlpWin];
