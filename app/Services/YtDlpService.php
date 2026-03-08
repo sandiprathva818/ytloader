@@ -51,6 +51,11 @@ class YtDlpService
             $url
         ]);
 
+        if (file_exists(storage_path('app/cookies.txt'))) {
+            $args[] = '--cookies';
+            $args[] = storage_path('app/cookies.txt');
+        }
+
         Log::info('Running yt-dlp command: ' . implode(' ', $args));
 
         $env = array_merge(getenv(), [
