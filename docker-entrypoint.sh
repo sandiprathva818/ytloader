@@ -26,5 +26,8 @@ php artisan migrate --force
 # Link storage
 php artisan storage:link || true
 
+echo "Starting background queue worker..."
+php artisan queue:listen --tries=3 --timeout=3600 &
+
 echo "Starting server..."
 exec "$@"
