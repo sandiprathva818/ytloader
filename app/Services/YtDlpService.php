@@ -46,6 +46,8 @@ class YtDlpService
             '--no-warnings',
             '--user-agent',
             $userAgent,
+            '--extractor-args',
+            'youtube:player-client=ios,android',
             $url
         ]);
 
