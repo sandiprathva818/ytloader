@@ -25,13 +25,19 @@ class VideoController extends Controller
             return response()->json(['error' => 'Invalid URL'], 422);
         }
 
-        $metadata = $this->ytDlp->getFormattedMetadata($request->url);
+        try {
+            $metadata = $this->ytDlp->getFormattedMetadata($request->url);
 
-        if (!$metadata) {
+            if (!$metadata) {
+                return response()->json([
+                    'error' => 'Could not fetch video information. Check logs for details.',
+                    'debug_info' => 'Try removing parameters from URL'
+                ], 400);
+            }
+        } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Could not fetch video information. Check logs for details.',
-                'debug_info' => 'Try removing parameters from URL'
-            ], 400);
+                'error' => 'Server error: ' . $e->getMessage()
+            ], 500);
         }
 
         return response()->json($metadata);

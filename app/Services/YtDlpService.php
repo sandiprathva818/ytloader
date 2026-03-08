@@ -59,16 +59,21 @@ class YtDlpService
             'YTDLP_NO_CURL_CFFI' => '1',
         ]);
 
-        $process = new Process($args, null, $env);
+        try {
+            $process = new Process($args, null, $env);
+            $process->run();
 
-        $process->run();
+            if (!$process->isSuccessful()) {
+                Log::error('yt-dlp failed: ' . $process->getErrorOutput());
+                // Don't just return null, throw an exception so the controller catches it and prints the exact yt-dlp error to the UI
+                throw new \Exception('Video Info Failed: ' . $process->getErrorOutput());
+            }
 
-        if (!$process->isSuccessful()) {
-            Log::error('yt-dlp failed: ' . $process->getErrorOutput());
-            return null;
+            return json_decode($process->getOutput(), true);
+        } catch (\Exception $e) {
+            Log::error('yt-dlp crash: ' . $e->getMessage());
+            throw new \Exception('yt-dlp error: ' . $e->getMessage());
         }
-
-        return json_decode($process->getOutput(), true);
     }
 
     public function getFormattedMetadata(string $url): ?array
