@@ -47,23 +47,27 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
-# Ensure storage directories exist
+# Ensure storage directories exist and are writable
 RUN mkdir -p storage/framework/views \
     storage/framework/cache/data \
     storage/framework/sessions \
-    storage/app/public/downloads
+    storage/app/public/downloads \
+    storage/logs
+
+# Fix permissions so the app can write to storage
+RUN chmod -R 777 storage bootstrap/cache
 
 # Create database
 RUN touch storage/database.sqlite
+RUN chmod 777 storage/database.sqlite
 RUN php artisan migrate --force
 
 # Create storage link
 RUN php artisan storage:link || true
 
-# Cache Laravel configurations
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+# Note: We intentionally DO NOT run php artisan config:cache during build.
+# Docker build does not have access to Render runtime environment variables (like APP_KEY).
+# Caching during build would permanently lock in empty configs.
 
 # Expose port 8000
 EXPOSE 8000
