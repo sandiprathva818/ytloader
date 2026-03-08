@@ -205,9 +205,9 @@
                         <div class="h-4 bg-white/5 rounded-full overflow-hidden mb-2">
                             <div class="h-full bg-primary-600 transition-all duration-300" :style="`width: ${progress}%`"></div>
                         </div>
-                        <div class="flex justify-between text-sm text-white/40">
-                            <span x-text="downloadStatus">Initializing...</span>
-                            <span x-text="`${progress}%` text-white"></span>
+                        <div class="flex justify-between text-sm text-white/40 mt-2">
+                            <span x-text="downloadStatus" class="text-left break-words max-w-[85%]">Initializing...</span>
+                            <span x-text="`${progress}%`" class="text-white font-bold"></span>
                         </div>
                     </div>
                     <template x-if="downloadFileUrl">
@@ -380,7 +380,7 @@
                                 this.downloadFileUrl = data.url;
                                 clearInterval(interval);
                             } else if (data.status === 'failed') {
-                                this.downloadStatus = 'Failed to download';
+                                this.downloadStatus = 'Failed: ' + (data.error || 'Unknown error. Check logs.');
                                 clearInterval(interval);
                             }
                         } catch (e) {

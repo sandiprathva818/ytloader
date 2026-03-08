@@ -48,6 +48,8 @@ class ProcessVideoDownload implements ShouldQueue
             $outputFile,
             '--newline',
             '--no-warnings',
+            '--user-agent',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
             $this->url
         ];
 
@@ -136,17 +138,19 @@ class ProcessVideoDownload implements ShouldQueue
                 Log::warning("Failed to record download in history: " . $e->getMessage());
             }
         } else {
-            Log::error("Download failed for Job {$this->jobId}: " . $process->getErrorOutput());
-            $this->updateStatus('failed', 0);
+            $err = $process->getErrorOutput() ?: $process->getOutput() ?: 'Unknown error occurred.';
+            Log::error("Download failed for Job {$this->jobId}: " . $err);
+            $this->updateStatus('failed', 0, '', $err);
         }
     }
 
-    protected function updateStatus(string $status, float $progress, string $url = ''): void
+    protected function updateStatus(string $status, float $progress, string $url = '', string $error = ''): void
     {
         $statusData = [
             'status' => $status,
             'progress' => $progress,
             'url' => $url,
+            'error' => $error,
             'updated_at' => now()->toIso8601String(),
         ];
 
