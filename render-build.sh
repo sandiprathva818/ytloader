@@ -5,6 +5,10 @@ set -o errexit
 # Install PHP dependencies
 composer install --no-dev --optimize-autoloader
 
+# Install NPM dependencies and build Node assets (Vite)
+npm install
+npm run build
+
 # Create bin directory for linux binaries
 mkdir -p bin
 
