@@ -45,15 +45,11 @@ class YtDlpService
             '--dump-json',
             '--flat-playlist',
             '--no-warnings',
+            '--force-ipv4',
             '--extractor-args',
-            'youtube:player-client=ios,android,web',
+            'youtube:player-client=android',
             $url
         ]);
-
-        if (file_exists(storage_path('app/cookies.txt'))) {
-            $args[] = '--cookies';
-            $args[] = storage_path('app/cookies.txt');
-        }
 
         Log::info('Running yt-dlp command: ' . implode(' ', $args));
 

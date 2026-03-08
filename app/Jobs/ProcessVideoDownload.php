@@ -50,15 +50,11 @@ class ProcessVideoDownload implements ShouldQueue
             $outputFile,
             '--newline',
             '--no-warnings',
+            '--force-ipv4',
             '--extractor-args',
-            'youtube:player-client=ios,android,web',
+            'youtube:player-client=android',
             $this->url
         ];
-
-        if (file_exists(storage_path('app/cookies.txt'))) {
-            $command[] = '--cookies';
-            $command[] = storage_path('app/cookies.txt');
-        }
 
         // If high quality video, we might need to merge audio
         if ($this->type === 'video' && str_contains($this->formatId, '+')) {
