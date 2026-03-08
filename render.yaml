@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: ytloader-web
+    env: php
+    buildCommand: "./render-build.sh"
+    startCommand: "php artisan serve --host=0.0.0.0 --port=$PORT"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: "https://ytloader-web.onrender.com"
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /opt/render/project/src/storage/database.sqlite
+      - key: QUEUE_CONNECTION
+        value: database
+    disk:
+      name: storage
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 10
+
+  - type: worker
+    name: ytloader-queue
+    env: php
+    buildCommand: "./render-build.sh"
+    startCommand: "php artisan queue:work --tries=3 --timeout=3600"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /opt/render/project/src/storage/database.sqlite
+      - key: QUEUE_CONNECTION
+        value: database
+    disk:
+      name: storage
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 10
