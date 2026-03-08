@@ -34,9 +34,9 @@ class VideoController extends Controller
                     'debug_info' => 'Try removing parameters from URL'
                 ], 400);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
-                'error' => 'Server error: ' . $e->getMessage()
+                'error' => 'Server error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine()
             ], 500);
         }
 

@@ -75,8 +75,8 @@ class YtDlpService
             }
 
             return json_decode($process->getOutput(), true);
-        } catch (\Exception $e) {
-            Log::error('yt-dlp crash: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('yt-dlp crash: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
             throw new \Exception('yt-dlp error: ' . $e->getMessage());
         }
     }
@@ -156,7 +156,7 @@ class YtDlpService
             $item['duration'] = $this->iso8601ToSeconds($duration);
 
             return $item;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::warning('YouTube API fetch failed: ' . $e->getMessage());
             return null;
         }
