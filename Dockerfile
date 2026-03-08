@@ -47,23 +47,14 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
-# Ensure storage directories exist and are writable
-RUN mkdir -p storage/framework/views \
-    storage/framework/cache/data \
-    storage/framework/sessions \
-    storage/app/public/downloads \
-    storage/logs
+# Copy the startup script for Render's empty persistent disk
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Fix permissions so the app can write to storage
-RUN chmod -R 777 storage bootstrap/cache
-
-# Create database
-RUN touch storage/database.sqlite
-RUN chmod 777 storage/database.sqlite
-RUN php artisan migrate --force
-
-# Create storage link
-RUN php artisan storage:link || true
+# Note: We do NOT run config:cache or migrations here.
+# Render mounts an empty Persistent Disk over /var/www/html/storage at runtime,
+# which completely deletes/hides all folders and databases created during build.
+# We rebuild them using docker-entrypoint.sh instead.
 
 # Note: We intentionally DO NOT run php artisan config:cache during build.
 # Docker build does not have access to Render runtime environment variables (like APP_KEY).
@@ -71,6 +62,9 @@ RUN php artisan storage:link || true
 
 # Expose port 8000
 EXPOSE 8000
+
+# Set entrypoint to run the startup script first
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Start Laravel's built-in server
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
