@@ -46,8 +46,6 @@ class YtDlpService
             '--flat-playlist',
             '--no-warnings',
             '--rm-cache-dir',
-            '--extractor-args',
-            'youtube:player-client=tvembedded,android_music,ios_music,ios,android',
             $url
         ]);
 
