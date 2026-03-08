@@ -46,6 +46,8 @@ class YtDlpService
             '--flat-playlist',
             '--no-warnings',
             '--force-ipv4',
+            '--extractor-args',
+            'youtube:player-client=ios,android,tv',
             $url
         ]);
 

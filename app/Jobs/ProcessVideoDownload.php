@@ -51,6 +51,8 @@ class ProcessVideoDownload implements ShouldQueue
             '--newline',
             '--no-warnings',
             '--force-ipv4',
+            '--extractor-args',
+            'youtube:player-client=ios,android,tv',
             $this->url
         ];
 
