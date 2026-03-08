@@ -32,7 +32,7 @@ RUN mkdir -p /usr/local/bin
 
 # Install yt-dlp (Nightly branch for latest bot bypasses)
 ARG CACHEBUST=20240324
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/download/nightly/yt-dlp -o /usr/local/bin/yt-dlp
+RUN curl -L https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
 RUN chmod a+rx /usr/local/bin/yt-dlp
 
 # Set working directory
