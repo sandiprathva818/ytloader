@@ -40,6 +40,12 @@ class ProcessVideoDownload implements ShouldQueue
         $actualFormatId = $this->formatId;
         if ($this->type === 'audio' && str_starts_with($this->formatId, 'audio-')) {
             $actualFormatId = 'bestaudio/best';
+        } elseif ($this->type === 'video' && str_contains($this->formatId, '[height<=')) {
+            // Extract the target height boundary so we can cascade down properly
+            preg_match('/\[height<=(\d+)\]/', $this->formatId, $matches);
+            $height = $matches[1] ?? '1080';
+            // Cascade: Try requested exact height -> Try anything best up to that height -> Just get highest possible -> fallback to single best stream
+            $actualFormatId = sprintf('bestvideo[height<=%s]+bestaudio/best/bestvideo+bestaudio/best', $height);
         }
 
         $command = [
