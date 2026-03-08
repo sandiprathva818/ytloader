@@ -67,15 +67,14 @@ class YtDlpService
             $process->run();
 
             if (!$process->isSuccessful()) {
-                Log::error('yt-dlp failed: ' . $process->getErrorOutput());
-                // Don't just return null, throw an exception so the controller catches it and prints the exact yt-dlp error to the UI
-                throw new \Exception('Video Info Failed: ' . $process->getErrorOutput());
+                Log::warning('yt-dlp Video Info Failed: ' . $process->getErrorOutput());
+                return null;
             }
 
             return json_decode($process->getOutput(), true);
         } catch (\Throwable $e) {
-            Log::error('yt-dlp crash: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
-            throw new \Exception('yt-dlp error: ' . $e->getMessage());
+            Log::warning('yt-dlp crash during info fetch: ' . $e->getMessage());
+            return null;
         }
     }
 
